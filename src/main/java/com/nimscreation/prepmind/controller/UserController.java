@@ -1,5 +1,6 @@
 package com.nimscreation.prepmind.controller;
 
+import com.nimscreation.prepmind.dto.request.UpdateUserRequestDto;
 import com.nimscreation.prepmind.dto.request.UserRequestDto;
 import com.nimscreation.prepmind.dto.response.UserResponseDto;
 import com.nimscreation.prepmind.entity.base.User;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
 
 
 @Validated
@@ -71,31 +74,59 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<UserResponseDto>>> getAllUsers(
+    public ResponseEntity<ApiResponse<List<UserResponseDto>>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt,desc") String sortBy) {
+            @RequestParam(defaultValue = "createdAt,desc") String sort) {
 
-        String[] sortParams = sortBy.split(",");
-
-        String sortField = sortParams[0];
+        String[] sortParams = sort.split(",");
         Sort.Direction direction =
                 sortParams.length > 1
                         ? Sort.Direction.fromString(sortParams[1])
                         : Sort.Direction.DESC;
 
-        Sort sortObj = Sort.by(direction, sortField);
+        Sort sortObj = Sort.by(direction, sortParams[0]);
 
         Page<User> usersPage = userService.getAllUsers(
                 PageRequest.of(page, size, sortObj)
         );
 
-        Page<UserResponseDto> responsePage =
-                usersPage.map(UserMapper::toResponse);
+        List<UserResponseDto> users =
+                usersPage.getContent()
+                        .stream()
+                        .map(UserMapper::toResponse)
+                        .toList();
 
         return ResponseEntity.ok(
-                ApiResponse.success("Users fetched successfully", responsePage)
+                ApiResponse.success("Users fetched successfully", users)
         );
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserRequestDto dto) {
+
+        User updatedUser = userService.updateUser(id, dto);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "User updated successfully",
+                        UserMapper.toResponse(updatedUser)
+                )
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
+
+        userService.deleteUser(id);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("User deleted successfully", null)
+        );
+    }
+
+
 
 }

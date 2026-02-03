@@ -15,13 +15,13 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserRequestDto {
 
-    @NotBlank(message = "Name cannot be empty")
+    @NotBlank(message = "Name is required")
     private String name;
 
     @Email(message = "Invalid email format")
-    @NotBlank(message = "Email cannot be empty")
+    @NotBlank(message = "Email is required")
     private String email;
 
     @NotNull(message = "Role is required")
-    private Role role;
+    private Role role;   // ✅ STRING from API
 }

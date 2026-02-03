@@ -1,6 +1,8 @@
-package com.nimscreation.prepmind.service.impl;
+package com.nimscreation.prepmind.service;
 
 import com.nimscreation.prepmind.entity.base.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
@@ -9,5 +11,7 @@ public interface UserService {
     User getUserById(Long userId);
 
     User getUserByEmail(String email);
+
+    Page<User> getAllUsers(Pageable pageable);
 }
 

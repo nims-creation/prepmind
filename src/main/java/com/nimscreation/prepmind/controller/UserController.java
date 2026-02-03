@@ -7,6 +7,7 @@ import com.nimscreation.prepmind.entity.base.User;
 import com.nimscreation.prepmind.mapper.UserMapper;
 import com.nimscreation.prepmind.service.UserService;
 import com.nimscreation.prepmind.util.ApiResponse;
+import com.nimscreation.prepmind.dto.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -74,12 +75,13 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserResponseDto>>> getAllUsers(
+    public ResponseEntity<ApiResponse<PageResponse<UserResponseDto>>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt,desc") String sort) {
 
         String[] sortParams = sort.split(",");
+
         Sort.Direction direction =
                 sortParams.length > 1
                         ? Sort.Direction.fromString(sortParams[1])
@@ -91,16 +93,24 @@ public class UserController {
                 PageRequest.of(page, size, sortObj)
         );
 
-        List<UserResponseDto> users =
-                usersPage.getContent()
-                        .stream()
-                        .map(UserMapper::toResponse)
-                        .toList();
+        PageResponse<UserResponseDto> response =
+                new PageResponse<>(
+                        usersPage.getContent()
+                                .stream()
+                                .map(UserMapper::toResponse)
+                                .toList(),
+                        usersPage.getNumber(),
+                        usersPage.getSize(),
+                        usersPage.getTotalElements(),
+                        usersPage.getTotalPages(),
+                        usersPage.isLast()
+                );
 
         return ResponseEntity.ok(
-                ApiResponse.success("Users fetched successfully", users)
+                ApiResponse.success("Users fetched successfully", response)
         );
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(
@@ -124,6 +134,20 @@ public class UserController {
 
         return ResponseEntity.ok(
                 ApiResponse.success("User deleted successfully", null)
+        );
+    }
+
+
+    @PutMapping("/{id}/restore")
+    public ResponseEntity<ApiResponse<UserResponseDto>> restoreUser(@PathVariable Long id) {
+
+        User user = userService.restoreUser(id);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "User restored successfully",
+                        UserMapper.toResponse(user)
+                )
         );
     }
 

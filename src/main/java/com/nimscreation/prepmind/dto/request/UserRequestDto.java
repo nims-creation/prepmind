@@ -23,5 +23,5 @@ public class UserRequestDto {
     private String email;
 
     @NotNull(message = "Role is required")
-    private Role role;   // ✅ STRING from API
+    private Role role;
 }

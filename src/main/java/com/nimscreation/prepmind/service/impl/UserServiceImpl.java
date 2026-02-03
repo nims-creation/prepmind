@@ -18,11 +18,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    @Override
     @Transactional
+    @Override
     public User createUser(User user) {
 
-        if (userRepository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmailAndDeletedFalse(user.getEmail())) {
             throw new UserAlreadyExistsException(user.getEmail());
         }
 
@@ -31,29 +31,32 @@ public class UserServiceImpl implements UserService {
 
 
 
+
     @Override
     public User getUserById(Long userId) {
-
         return userRepository.findById(userId)
+                .filter(user -> !user.isDeleted())
                 .orElseThrow(() ->
                         new UserNotFoundException("User not found with id: " + userId));
     }
 
 
 
+
     @Override
     public User getUserByEmail(String email) {
-
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmailAndDeletedFalse(email)
                 .orElseThrow(() ->
                         new UserNotFoundException("User not found with email: " + email));
     }
 
 
 
+
+
     @Override
     public Page<User> getAllUsers(Pageable pageable) {
-        return userRepository.findAll(pageable);
+        return userRepository.findAllByDeletedFalse(pageable);
     }
 
 
@@ -61,15 +64,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(Long userId, UpdateUserRequestDto dto) {
 
-        User user = getUserById(userId);
+        User user = getUserById(userId); // already deleted=false check
 
-        // 🔒 Email uniqueness check
         if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
 
             String newEmail = dto.getEmail().trim();
 
             if (!newEmail.equals(user.getEmail())
-                    && userRepository.existsByEmail(newEmail)) {
+                    && userRepository.existsByEmailAndDeletedFalse(newEmail)) {
 
                 throw new UserAlreadyExistsException(newEmail);
             }
@@ -89,17 +91,31 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-
     @Override
     public void deleteUser(Long userId) {
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedFalse(userId)
                 .orElseThrow(() ->
                         new UserNotFoundException("User not found with id: " + userId));
 
-        userRepository.delete(user);
+        user.setDeleted(true);
+        userRepository.save(user);
     }
+
+
+    @Override
+    public User restoreUser(Long userId) {
+
+        User user = userRepository.findByIdAndDeletedTrue(userId)
+                .orElseThrow(() ->
+                        new UserNotFoundException("Deleted user not found with id: " + userId));
+
+        user.setDeleted(false);
+        return userRepository.save(user);
+    }
+
+
+
 
 
 }

@@ -19,5 +19,7 @@ public interface UserService {
     Page<User> getAllUsers(Pageable pageable);
 
     void deleteUser(Long userId);
+
+    User restoreUser(Long userId);
 }
 

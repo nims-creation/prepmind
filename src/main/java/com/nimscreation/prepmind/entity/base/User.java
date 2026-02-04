@@ -28,6 +28,12 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean deleted = false;
+
+
+    @Column(nullable = false)
+    private String password;
+
 }

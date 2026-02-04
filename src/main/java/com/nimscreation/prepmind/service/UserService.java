@@ -9,17 +9,19 @@ public interface UserService {
 
     User createUser(User user);
 
-    User getUserById(Long userId);
+    User getUserById(Long id);
 
     User getUserByEmail(String email);
 
-    User updateUser(Long userId, UpdateUserRequestDto dto);
-
-
     Page<User> getAllUsers(Pageable pageable);
 
-    void deleteUser(Long userId);
+    User updateUser(Long id, UpdateUserRequestDto dto);
 
-    User restoreUser(Long userId);
+    void deleteUser(Long id);
+
+    User restoreUser(Long id);
+
+    Page<User> searchUsers(String keyword, Pageable pageable);
 }
+
 

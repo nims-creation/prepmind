@@ -1,6 +1,7 @@
 package com.nimscreation.prepmind.service.impl;
 
 import com.nimscreation.prepmind.dto.request.UpdateUserRequestDto;
+import com.nimscreation.prepmind.entity.Enum.Role;
 import com.nimscreation.prepmind.entity.base.User;
 import com.nimscreation.prepmind.exception.UserAlreadyExistsException;
 import com.nimscreation.prepmind.exception.UserNotFoundException;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.file.AccessDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -91,28 +94,33 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public void deleteUser(Long userId) {
 
-        User user = userRepository.findByIdAndDeletedFalse(userId)
-                .orElseThrow(() ->
-                        new UserNotFoundException("User not found with id: " + userId));
+    @Override
+    public void deleteUser(Long id) {
+
+        User user = userRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         user.setDeleted(true);
         userRepository.save(user);
     }
 
-
     @Override
-    public User restoreUser(Long userId) {
+    public User restoreUser(Long id) {
 
-        User user = userRepository.findByIdAndDeletedTrue(userId)
-                .orElseThrow(() ->
-                        new UserNotFoundException("Deleted user not found with id: " + userId));
+        User user = userRepository.findByIdAndDeletedTrue(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         user.setDeleted(false);
         return userRepository.save(user);
     }
+
+
+    @Override
+    public Page<User> searchUsers(String keyword, Pageable pageable) {
+        return userRepository.searchActiveUsers(keyword, pageable);
+    }
+
 
 
 

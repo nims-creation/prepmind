@@ -38,4 +38,3 @@ public class SecurityBeansConfig {
         return http.build();
     }
 }
-}

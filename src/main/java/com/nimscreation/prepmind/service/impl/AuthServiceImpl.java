@@ -15,7 +15,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtService;
 
     @Override
     public AuthResponseDto login(LoginRequestDto dto) {
@@ -28,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String accessToken = jwtService.generateAccessToken(user);
+
         String refreshToken = jwtService.generateRefreshToken(user);
 
         return new AuthResponseDto(accessToken, refreshToken);

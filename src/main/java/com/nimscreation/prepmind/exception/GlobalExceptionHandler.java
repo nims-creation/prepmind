@@ -48,19 +48,21 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure("Validation failed", errors));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.failure("Something went wrong", null));
-    }
-
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error(ex.getMessage()));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<String>> handleAll(Exception ex) {
+        ex.printStackTrace(); // 🔥 THIS LINE
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.failure(ex.getMessage(), null));
+    }
+
+
 
 }

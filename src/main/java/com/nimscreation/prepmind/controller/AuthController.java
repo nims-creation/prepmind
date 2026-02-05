@@ -2,7 +2,6 @@ package com.nimscreation.prepmind.controller;
 
 import com.nimscreation.prepmind.dto.auth.AuthResponseDto;
 import com.nimscreation.prepmind.dto.auth.LoginRequestDto;
-import com.nimscreation.prepmind.dto.auth.RefreshTokenRequestDto;
 import com.nimscreation.prepmind.dto.auth.RegisterRequestDto;
 import com.nimscreation.prepmind.entity.Enum.Role;
 import com.nimscreation.prepmind.entity.base.User;
@@ -92,9 +91,6 @@ public class AuthController {
                 )
         );
     }
-
-
-
 
 
 }

@@ -5,8 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AIResponseDto {
-
-    private String answer;
-    private String model;   // mock / gpt-4 / etc
+public class AiResponseDto {
+    private String result;
 }

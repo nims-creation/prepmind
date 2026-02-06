@@ -1,15 +1,15 @@
 package com.nimscreation.prepmind.ai.service.impl;
 
-import com.nimscreation.prepmind.ai.dto.AIRequestDto;
-import com.nimscreation.prepmind.ai.dto.AIResponseDto;
-import com.nimscreation.prepmind.ai.service.AIService;
+import com.nimscreation.prepmind.ai.dto.AiRequestDto;
+import com.nimscreation.prepmind.ai.dto.AiResponseDto;
+import com.nimscreation.prepmind.ai.service.AiService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MockAIServiceImpl implements AIService {
+public class AiServiceImpl implements AiService {
 
     @Override
-    public AIResponseDto generate(AIRequestDto request) {
+    public AiResponseDto generate(AiRequestDto request) {
 
         String response =
                 "Mock AI Response for use case: " +
@@ -17,7 +17,7 @@ public class MockAIServiceImpl implements AIService {
                         "\nPrompt: " +
                         request.getPrompt();
 
-        return new AIResponseDto(response, "mock-ai");
+        return new AiResponseDto(response, "mock-ai");
     }
 }
 

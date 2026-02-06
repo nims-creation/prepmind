@@ -1,6 +1,6 @@
 package com.nimscreation.prepmind.ai.enums;
 
-public enum AIUseCase {
+public enum AiUseCase {
 
     INTERVIEW_QUESTIONS,
     RESUME_REVIEW,

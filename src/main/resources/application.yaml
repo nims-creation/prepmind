@@ -2,6 +2,10 @@ spring:
   application:
     name: prepmind
 
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration
+
   datasource:
     url: jdbc:postgresql://localhost:5432/prepmind_db
     username: postgres
@@ -17,7 +21,6 @@ spring:
       hibernate:
         format_sql: true
 
-# TEMPORARILY DISABLE SWAGGER
 springdoc:
   api-docs:
     enabled: false

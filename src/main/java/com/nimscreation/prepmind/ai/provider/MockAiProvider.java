@@ -9,6 +9,10 @@ public class MockAiProvider implements AiProvider {
     @Override
     public String generate(AiUseCase useCase, String prompt) {
 
+        if (useCase == null) {
+            return "Mock AI received null use case for prompt: " + prompt;
+        }
+
         return switch (useCase) {
 
             case INTERVIEW_QUESTIONS ->
@@ -25,6 +29,10 @@ public class MockAiProvider implements AiProvider {
 
             case QUIZ_GENERATION ->
                     "Mock Quiz questions generated for: " + prompt;
+
+            default ->
+                    "Mock AI default response for: " + prompt;
         };
     }
 }
+

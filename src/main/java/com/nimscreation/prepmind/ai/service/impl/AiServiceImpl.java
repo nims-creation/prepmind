@@ -1,7 +1,6 @@
 package com.nimscreation.prepmind.ai.service.impl;
 
-import com.nimscreation.prepmind.ai.dto.AiRequestDto;
-import com.nimscreation.prepmind.ai.dto.AiResponseDto;
+import com.nimscreation.prepmind.ai.enums.AiUseCase;
 import com.nimscreation.prepmind.ai.provider.AiProvider;
 import com.nimscreation.prepmind.ai.service.AiService;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +13,8 @@ public class AiServiceImpl implements AiService {
     private final AiProvider aiProvider;
 
     @Override
-    public AiResponseDto generate(AiRequestDto request) {
-
-        String output =
-                aiProvider.generate(
-                        request.getUseCase(),
-                        request.getPrompt()
-                );
-
-        return new AiResponseDto(output);
+    public String generate(AiUseCase useCase, String prompt) {
+        return aiProvider.generate(useCase, prompt);
     }
 }
 

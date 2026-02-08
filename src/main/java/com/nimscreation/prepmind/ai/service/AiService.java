@@ -1,9 +1,8 @@
 package com.nimscreation.prepmind.ai.service;
 
-import com.nimscreation.prepmind.ai.dto.AiRequestDto;
-import com.nimscreation.prepmind.ai.dto.AiResponseDto;
+import com.nimscreation.prepmind.ai.enums.AiUseCase;
 
 public interface AiService {
 
-    AiResponseDto generate(AiRequestDto request);
+    String generate(AiUseCase useCase, String prompt);
 }

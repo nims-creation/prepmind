@@ -3,11 +3,10 @@ package com.nimscreation.prepmind.exception;
 import com.nimscreation.prepmind.util.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.security.access.AccessDeniedException;
-
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(ApiResponse.failure(ex.getMessage(), null));
+                .body(ApiResponse.failure(ex.getMessage()));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
@@ -30,7 +29,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.failure(ex.getMessage(), null));
+                .body(ApiResponse.failure(ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,30 +38,33 @@ public class GlobalExceptionHandler {
 
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
-        );
+        ex.getBindingResult()
+                .getFieldErrors()
+                .forEach(error ->
+                        errors.put(error.getField(), error.getDefaultMessage())
+                );
 
         return ResponseEntity
                 .badRequest()
-                .body(ApiResponse.failure("Validation failed", errors));
+                .body(ApiResponse.failure("Validation failed"));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(
+            AccessDeniedException ex) {
+
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error(ex.getMessage()));
+                .body(ApiResponse.failure(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<String>> handleAll(Exception ex) {
-        ex.printStackTrace(); // 🔥 THIS LINE
+    public ResponseEntity<ApiResponse<Void>> handleAll(Exception ex) {
+        ex.printStackTrace(); // OK for dev
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.failure(ex.getMessage(), null));
+                .body(ApiResponse.failure("Internal server error"));
     }
-
-
-
 }
+

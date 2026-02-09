@@ -10,17 +10,24 @@ public class MockAiProvider implements AiProvider {
     public String generate(AiUseCase useCase, String prompt) {
 
         return switch (useCase) {
+
             case INTERVIEW_QUESTIONS ->
                     "Mock Interview Questions for: " + prompt;
+
             case MOCK_INTERVIEW ->
-                    "Mock Interview Simulation for: " + prompt;
+                    "Mock Interview Simulation started for: " + prompt;
+
             case RESUME_REVIEW ->
-                    "Mock Resume Review for: " + prompt;
+                    "Mock Resume Review feedback for: " + prompt;
+
             case STUDY_PLAN ->
-                    "Mock Study Plan for: " + prompt;
+                    "Mock Study Plan generated for: " + prompt;
+
             case QUIZ_GENERATION ->
-                    "Mock Quiz generated for: " + prompt;
+                    "Mock Quiz questions generated for: " + prompt;
+
+            default ->
+                    "Mock AI response for: " + prompt;
         };
     }
 }
-

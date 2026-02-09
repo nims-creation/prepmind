@@ -12,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,7 @@ public class UserController {
 
     private final UserService userService;
 
-    // ================= CREATE =================
+    //CREATE
     @PostMapping
     public ResponseEntity<ApiResponse<UserResponseDto>> createUser(
             @Valid @RequestBody UserRequestDto requestDto) {
@@ -45,7 +44,7 @@ public class UserController {
                 ));
     }
 
-    // ================= GET BY ID =================
+    //GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponseDto>> getUserById(
             @PathVariable Long id) {
@@ -60,7 +59,7 @@ public class UserController {
         );
     }
 
-    // ================= GET BY EMAIL =================
+    //GET BY EMAIL
     @GetMapping("/by-email")
     public ResponseEntity<ApiResponse<UserResponseDto>> getUserByEmail(
             @RequestParam String email) {
@@ -75,7 +74,7 @@ public class UserController {
         );
     }
 
-    // ================= GET ALL (PAGINATION) =================
+    //GET ALL (PAGINATION)
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<UserResponseDto>>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
@@ -112,7 +111,7 @@ public class UserController {
         );
     }
 
-    // ================= UPDATE =================
+    //UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(
             @PathVariable Long id,
@@ -128,7 +127,7 @@ public class UserController {
         );
     }
 
-    // ================= DELETE (SOFT) =================
+    //DELETE (SOFT)
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(
             @PathVariable Long id) {
@@ -140,7 +139,7 @@ public class UserController {
         );
     }
 
-    // ================= RESTORE =================
+    //RESTORE
     @PutMapping("/{id}/restore")
     public ResponseEntity<ApiResponse<UserResponseDto>> restoreUser(
             @PathVariable Long id) {

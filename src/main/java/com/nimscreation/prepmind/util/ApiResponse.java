@@ -16,19 +16,27 @@ public class ApiResponse<T> {
         this.timestamp = LocalDateTime.now();
     }
 
-    // ✅ DEFAULT SUCCESS
+    /* ================= SUCCESS ================= */
+
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(true, "Success", data);
     }
 
-    // ✅ CUSTOM MESSAGE SUCCESS
     public static <T> ApiResponse<T> success(String message, T data) {
         return new ApiResponse<>(true, message, data);
     }
 
+    /* ================= FAILURE ================= */
+
     public static <T> ApiResponse<T> failure(String message) {
         return new ApiResponse<>(false, message, null);
     }
+
+    public static <T> ApiResponse<T> failure(String message, T data) {
+        return new ApiResponse<>(false, message, data);
+    }
+
+    /* ================= GETTERS ================= */
 
     public boolean isSuccess() { return success; }
     public String getMessage() { return message; }

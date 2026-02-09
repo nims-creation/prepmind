@@ -9,29 +9,17 @@ public class MockAiProvider implements AiProvider {
     @Override
     public String generate(AiUseCase useCase, String prompt) {
 
-        if (useCase == null) {
-            return "Mock AI received null use case for prompt: " + prompt;
-        }
-
         return switch (useCase) {
-
             case INTERVIEW_QUESTIONS ->
                     "Mock Interview Questions for: " + prompt;
-
             case MOCK_INTERVIEW ->
-                    "Mock Interview Simulation started for: " + prompt;
-
+                    "Mock Interview Simulation for: " + prompt;
             case RESUME_REVIEW ->
-                    "Mock Resume Review feedback for: " + prompt;
-
+                    "Mock Resume Review for: " + prompt;
             case STUDY_PLAN ->
-                    "Mock Study Plan generated for: " + prompt;
-
+                    "Mock Study Plan for: " + prompt;
             case QUIZ_GENERATION ->
-                    "Mock Quiz questions generated for: " + prompt;
-
-            default ->
-                    "Mock AI default response for: " + prompt;
+                    "Mock Quiz generated for: " + prompt;
         };
     }
 }

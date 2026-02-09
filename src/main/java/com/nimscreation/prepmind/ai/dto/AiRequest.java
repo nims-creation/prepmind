@@ -1,4 +1,14 @@
 package com.nimscreation.prepmind.ai.dto;
 
-public record AiRequest() {
-}
+import com.nimscreation.prepmind.ai.enums.AiUseCase;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public record AiRequest(
+
+        @NotNull
+        AiUseCase useCase,
+
+        @NotBlank
+        String prompt
+) {}

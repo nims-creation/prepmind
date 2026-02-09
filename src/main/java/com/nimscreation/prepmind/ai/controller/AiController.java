@@ -17,11 +17,9 @@ public class AiController {
     @PostMapping("/generate")
     public ApiResponse<String> generate(@Valid @RequestBody AiRequest request) {
 
-        String response = aiService.generate(
-                request.useCase(),
-                request.prompt()
+        return ApiResponse.success(
+                aiService.generate(request.useCase(), request.prompt())
         );
-
-        return ApiResponse.success(response);
     }
 }
+

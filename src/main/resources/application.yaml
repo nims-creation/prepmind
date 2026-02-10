@@ -2,10 +2,6 @@ spring:
   application:
     name: prepmind
 
-  autoconfigure:
-    exclude:
-      - org.springframework.ai.autoconfigure.openai.OpenAiAutoConfiguration
-
   datasource:
     url: jdbc:postgresql://localhost:5432/prepmind_db
     username: postgres
@@ -20,6 +16,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  ai:
+    openai:
+      enabled: false   # SAFE DEFAULT
+      api-key: ""      # optional, avoids accidental startup errors
 
 springdoc:
   api-docs:

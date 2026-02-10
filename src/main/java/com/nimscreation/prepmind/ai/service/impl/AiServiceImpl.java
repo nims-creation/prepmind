@@ -2,12 +2,16 @@ package com.nimscreation.prepmind.ai.service.impl;
 
 import com.nimscreation.prepmind.ai.enums.AiUseCase;
 import com.nimscreation.prepmind.ai.provider.AiProvider;
+import com.nimscreation.prepmind.ai.ratelimiter.AiRateLimiter;
 import com.nimscreation.prepmind.ai.service.AiService;
+import com.nimscreation.prepmind.exception.TooManyRequestsException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class AiServiceImpl implements AiService {
 
     private final AiProvider aiProvider;
@@ -18,17 +22,18 @@ public class AiServiceImpl implements AiService {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        String userId = auth.getName();
+        String userId = auth.getName(); // usually email
         boolean isAdmin = auth.getAuthorities()
                 .stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
+        // 🚦 STEP 4 + STEP 6 HERE
         if (!rateLimiter.allowRequest(userId, isAdmin)) {
-            throw new TooManyRequestsException("AI rate limit exceeded");
+            throw new TooManyRequestsException(
+                    "Rate limit exceeded. Try again after some time."
+            );
         }
 
         return aiProvider.generate(useCase, prompt);
     }
 }
-
-

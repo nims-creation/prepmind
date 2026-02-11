@@ -17,11 +17,9 @@ spring:
       hibernate:
         format_sql: true
 
-  profiles: openai
-    ai:
-      openai:
-        api-key: ${OPENAI_API_KEY}
-        model: gpt-4o-mini
+  ai:
+    openai:
+      enabled: false   # Default safe mode (mock provider will be used)
 
 springdoc:
   api-docs:
@@ -31,3 +29,15 @@ springdoc:
 
 server:
   port: 8080
+
+---
+spring:
+  config:
+    activate:
+      on-profile: openai
+
+  ai:
+    openai:
+      enabled: true
+      api-key: ${OPENAI_API_KEY}
+      model: gpt-4o-mini

@@ -17,4 +17,9 @@ public interface AiUsageRepository extends JpaRepository<AiUsage, Long> {
     long countByUserEmailAndDate(@Param("userEmail") String userEmail, @Param("date") LocalDate date);
 
     Optional<AiUsage> findByUserEmailAndRequestedAt(String userEmail, LocalDateTime requestedAt);
+
+    Optional<AiUsage> findByUserIdAndUsageDate(Long userId, LocalDate usageDate);
+
+    Optional<AiUsage> findByUserEmailAndUsageDate(String userEmail, LocalDate usageDate);
+
 }

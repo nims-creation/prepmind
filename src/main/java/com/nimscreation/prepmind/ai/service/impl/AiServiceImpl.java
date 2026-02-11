@@ -23,6 +23,7 @@ public class AiServiceImpl implements AiService {
     private final AiProvider aiProvider;
     private final AiRateLimiter rateLimiter;
     private final AiUsageRepository aiUsageRepository;
+    private static final int DAILY_LIMIT = 10;
 
 
     @Override
@@ -30,34 +31,65 @@ public class AiServiceImpl implements AiService {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        String userEmail = auth.getName(); // usually email
+        String userEmail = auth.getName();
+
         boolean isAdmin = auth.getAuthorities()
                 .stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-        // 🚦 STEP 4 + STEP 6 HERE
+        // Rate limiting (per minute)
         if (!rateLimiter.allowRequest(userEmail, isAdmin)) {
             throw new TooManyRequestsException(
                     "Rate limit exceeded. Try again after some time."
             );
         }
 
-        // Check daily quota
-        LocalDate today = LocalDate.now();
-        long dailyUsageCount = aiUsageRepository.countByUserEmailAndDate(userEmail, today);
-        if (dailyUsageCount >= 20) {
-            throw new AiQuotaExceededException("Daily AI quota exceeded");
+        // Daily quota (skip for admin)
+        if (!isAdmin) {
+            validateDailyQuota(userEmail);
         }
 
-        AiUsage usage = AiUsage.builder()
-                .userEmail(userEmail)
-                .useCase(useCase)
-                .requestedAt(LocalDateTime.now())
-                .requestCount(1)
-                .build();
+        // Call AI provider
+        String response = aiProvider.generate(useCase, prompt);
+
+        // Increment usage AFTER successful AI call
+        if (!isAdmin) {
+            incrementUsage(userEmail, useCase);
+        }
+
+        return response;
+    }
+
+    private void incrementUsage(String userEmail, AiUseCase useCase) {
+
+        LocalDate today = LocalDate.now();
+
+        AiUsage usage = aiUsageRepository
+                .findByUserEmailAndUsageDate(userEmail, today)
+                .orElse(
+                        AiUsage.builder()
+                                .userEmail(userEmail)
+                                .usageDate(today)
+                                .requestCount(0)
+                                .build()
+                );
+
+        usage.setRequestCount(usage.getRequestCount() + 1);
+        usage.setLastRequestedAt(LocalDateTime.now());
 
         aiUsageRepository.save(usage);
+    }
 
-        return aiProvider.generate(useCase, prompt);
+    private void validateDailyQuota(String userEmail) {
+
+        LocalDate today = LocalDate.now();
+
+        AiUsage usage = aiUsageRepository
+                .findByUserEmailAndUsageDate(userEmail, today)
+                .orElse(null);
+
+        if (usage != null && usage.getRequestCount() >= DAILY_LIMIT) {
+            throw new AiQuotaExceededException("Daily AI quota exceeded");
+        }
     }
 }

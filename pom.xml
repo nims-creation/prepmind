@@ -5,57 +5,55 @@
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
+    <parent> <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
-        <relativePath/>
+        <version>3.2.4</version> <relativePath/>
     </parent>
-
 
     <groupId>com.nimscreation</groupId>
     <artifactId>prepmind</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>prepmind</name>
-    <description>AI-powered learning and interview prep backend</description>
+
+    <description>
+        AI-powered learning and interview prep backend
+    </description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>
+            21
+        </java.version>
     </properties>
 
     <!-- ✅ SPRING AI BOM (MUST be outside dependencies) -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.ai</groupId>
-                <artifactId>spring-ai-bom</artifactId>
-                <version>1.0.0-M4</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
+    <dependencyManagement> <dependencies>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-bom</artifactId>
+            <version>1.0.0-M4</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+    </dependencies>
+    </dependencyManagement>
     <repositories>
         <repository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
             <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-
+            <snapshots> <enabled>false</enabled> </snapshots>
+        </repository> </repositories>
     <dependencies>
 
         <!-- REST APIs -->
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
 
         <!-- JPA -->
         <dependency>
@@ -102,12 +100,14 @@
             <artifactId>jjwt-api</artifactId>
             <version>0.12.3</version>
         </dependency>
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
             <version>0.12.3</version>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
@@ -140,8 +140,6 @@
             <artifactId>bucket4j-core</artifactId>
             <version>8.10.0</version>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -163,5 +161,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

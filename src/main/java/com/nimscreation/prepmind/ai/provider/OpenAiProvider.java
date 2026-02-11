@@ -1,17 +1,15 @@
 package com.nimscreation.prepmind.ai.provider;
 
 import com.nimscreation.prepmind.ai.enums.AiUseCase;
+import com.nimscreation.prepmind.ai.prompt.PromptFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("openai")
 @RequiredArgsConstructor
-@ConditionalOnProperty(
-        name = "spring.ai.openai.enabled",
-        havingValue = "true"
-)
 public class OpenAiProvider implements AiProvider {
 
     private final ChatClient chatClient;
@@ -19,7 +17,7 @@ public class OpenAiProvider implements AiProvider {
     @Override
     public String generate(AiUseCase useCase, String prompt) {
 
-        String systemPrompt = buildSystemPrompt(useCase);
+        String systemPrompt = PromptFactory.forUseCase(useCase);
 
         return chatClient.prompt()
                 .system(systemPrompt)
@@ -27,25 +25,5 @@ public class OpenAiProvider implements AiProvider {
                 .call()
                 .content();
     }
-
-    private String buildSystemPrompt(AiUseCase useCase) {
-
-        return switch (useCase) {
-
-            case INTERVIEW_QUESTIONS ->
-                    "You are an expert interviewer. Generate high-quality interview questions.";
-
-            case MOCK_INTERVIEW ->
-                    "You are an interviewer. Conduct a realistic mock interview.";
-
-            case RESUME_REVIEW ->
-                    "You are a resume reviewer. Give clear improvement suggestions.";
-
-            case STUDY_PLAN ->
-                    "You are a mentor. Create a structured study plan.";
-
-            case QUIZ_GENERATION ->
-                    "You are a quiz generator. Create MCQs with answers.";
-        };
-    }
 }
+

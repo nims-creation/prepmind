@@ -1,14 +1,19 @@
 package com.nimscreation.prepmind.ai.service.impl;
 
+import com.nimscreation.prepmind.ai.dto.AiHistoryResponse;
+import com.nimscreation.prepmind.ai.entity.AiRequestLog;
 import com.nimscreation.prepmind.ai.entity.AiUsage;
 import com.nimscreation.prepmind.ai.enums.AiUseCase;
 import com.nimscreation.prepmind.ai.provider.AiProvider;
 import com.nimscreation.prepmind.ai.ratelimiter.AiRateLimiter;
+import com.nimscreation.prepmind.ai.repository.AiRequestLogRepository;
 import com.nimscreation.prepmind.ai.repository.AiUsageRepository;
 import com.nimscreation.prepmind.ai.service.AiService;
 import com.nimscreation.prepmind.exception.AiQuotaExceededException;
 import com.nimscreation.prepmind.exception.TooManyRequestsException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,41 +29,85 @@ public class AiServiceImpl implements AiService {
     private final AiRateLimiter rateLimiter;
     private final AiUsageRepository aiUsageRepository;
     private static final int DAILY_LIMIT = 10;
+    private final AiRequestLogRepository aiRequestLogRepository;
+
 
 
     @Override
     public String generate(AiUseCase useCase, String prompt) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         String userEmail = auth.getName();
 
         boolean isAdmin = auth.getAuthorities()
                 .stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-        // Rate limiting (per minute)
         if (!rateLimiter.allowRequest(userEmail, isAdmin)) {
-            throw new TooManyRequestsException(
-                    "Rate limit exceeded. Try again after some time."
-            );
+            throw new TooManyRequestsException("Rate limit exceeded.");
         }
 
-        // Daily quota (skip for admin)
         if (!isAdmin) {
             validateDailyQuota(userEmail);
         }
 
-        // Call AI provider
-        String response = aiProvider.generate(useCase, prompt);
+        long start = System.currentTimeMillis();
 
-        // Increment usage AFTER successful AI call
-        if (!isAdmin) {
-            incrementUsage(userEmail, useCase);
+        AiRequestLog log = AiRequestLog.builder()
+                .userEmail(userEmail)
+                .useCase(useCase)
+                .prompt(prompt)
+                .requestedAt(LocalDateTime.now())
+                .build();
+
+        try {
+            String response = aiProvider.generate(useCase, prompt);
+
+            long duration = System.currentTimeMillis() - start;
+
+            log.setResponse(response);
+            log.setResponseTimeMs(duration);
+            log.setSuccess(true);
+
+            aiRequestLogRepository.save(log);
+
+            if (!isAdmin) {
+                incrementUsage(userEmail, useCase);
+            }
+
+            return response;
+
+        } catch (Exception ex) {
+
+            log.setSuccess(false);
+            log.setErrorMessage(ex.getMessage());
+            log.setResponseTimeMs(System.currentTimeMillis() - start);
+
+            aiRequestLogRepository.save(log);
+
+            throw ex;
         }
-
-        return response;
     }
+
+    @Override
+    public Page<AiHistoryResponse> getUserHistory(Pageable pageable) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = auth.getName();
+
+        return aiRequestLogRepository
+                .findByUserEmail(userEmail, pageable)
+                .map(log -> AiHistoryResponse.builder()
+                        .id(log.getId())
+                        .useCase(log.getUseCase())
+                        .prompt(log.getPrompt())
+                        .response(log.getResponse())
+                        .requestedAt(log.getRequestedAt())
+                        .responseTimeMs(log.getResponseTimeMs())
+                        .success(log.isSuccess())
+                        .build());
+    }
+
 
     private void incrementUsage(String userEmail, AiUseCase useCase) {
 

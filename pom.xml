@@ -135,11 +135,15 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- Bucket4j Rate Limiting -->
+        <!-- Bucket4j -->
         <dependency>
-            <groupId>com.github.vladimir-bukhtoyarov</groupId>
+            <groupId>com.bucket4j</groupId>
             <artifactId>bucket4j-core</artifactId>
-            <version>8.10.0</version>
+            <version>8.8.0</version>
         </dependency>
+
+
     </dependencies>
 
     <build>

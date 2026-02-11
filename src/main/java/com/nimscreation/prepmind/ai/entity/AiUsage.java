@@ -24,6 +24,6 @@ public class AiUsage {
     private AiUseCase useCase;
 
     private LocalDateTime requestedAt;
+
+    private int requestCount;
 }
-
-

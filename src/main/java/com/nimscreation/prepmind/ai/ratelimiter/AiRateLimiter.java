@@ -1,8 +1,8 @@
 package com.nimscreation.prepmind.ai.ratelimiter;
 
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
+import com.bucket4j.Bandwidth;
+import com.bucket4j.Bucket;
+import com.bucket4j.Refill;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -23,8 +23,14 @@ public class AiRateLimiter {
     }
 
     private Bucket createBucket(String userId) {
-        return Bucket4j.builder()
-                .addLimit(Bandwidth.simple(5, Duration.ofMinutes(1)))
+
+        Bandwidth limit = Bandwidth.classic(
+                5, // 5 requests
+                Refill.intervally(5, Duration.ofMinutes(1))
+        );
+
+        return Bucket.builder()
+                .addLimit(limit)
                 .build();
     }
 }

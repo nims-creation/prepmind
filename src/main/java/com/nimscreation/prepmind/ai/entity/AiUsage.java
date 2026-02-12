@@ -1,17 +1,22 @@
 package com.nimscreation.prepmind.ai.entity;
 
-import com.nimscreation.prepmind.ai.enums.AiUseCase;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"userEmail", "usageDate"})
+        }
+)
 public class AiUsage {
 
     @Id
@@ -20,10 +25,9 @@ public class AiUsage {
 
     private String userEmail;
 
-    @Enumerated(EnumType.STRING)
-    private AiUseCase useCase;
-
-    private LocalDateTime requestedAt;
+    private LocalDate usageDate;
 
     private int requestCount;
+
+    private LocalDateTime lastRequestedAt;
 }

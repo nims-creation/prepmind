@@ -1,5 +1,6 @@
 package com.nimscreation.prepmind.ai.provider;
 
+import com.nimscreation.prepmind.ai.dto.AiInternalResponse;
 import com.nimscreation.prepmind.ai.enums.AiUseCase;
 import com.nimscreation.prepmind.ai.prompt.PromptFactory;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +16,22 @@ public class OpenAiProvider implements AiProvider {
     private final ChatClient chatClient;
 
     @Override
-    public String generate(AiUseCase useCase, String prompt) {
+    public AiInternalResponse generate(AiUseCase useCase, String prompt) {
 
         String systemPrompt = PromptFactory.forUseCase(useCase);
 
-        return chatClient.prompt()
+        String content = chatClient.prompt()
                 .system(systemPrompt)
                 .user(prompt)
                 .call()
                 .content();
+
+        return AiInternalResponse.builder()
+                .content(content)
+                .promptTokens(0)
+                .completionTokens(0)
+                .totalTokens(0)
+                .estimatedCost(0.0)
+                .build();
     }
 }
-

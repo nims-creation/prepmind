@@ -1,7 +1,9 @@
 package com.nimscreation.prepmind.ai.controller;
 
+import com.nimscreation.prepmind.ai.dto.AiGlobalAnalyticsResponse;
 import com.nimscreation.prepmind.ai.entity.AiUsage;
 import com.nimscreation.prepmind.ai.repository.AiUsageRepository;
+import com.nimscreation.prepmind.ai.service.AiService;
 import com.nimscreation.prepmind.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,11 +20,17 @@ import java.util.List;
 public class AiAdminController {
 
     private final AiUsageRepository aiUsageRepository;
+    private final AiService aiService;
 
     @GetMapping("/usage")
     public ApiResponse<List<AiUsage>> getAllUsage() {
         return ApiResponse.success("AI usage fetched",
                 aiUsageRepository.findAll());
     }
-}
 
+    @GetMapping("/analytics")
+    public ApiResponse<AiGlobalAnalyticsResponse> getGlobalAnalytics() {
+        return ApiResponse.success("Global analytics fetched",
+                aiService.getGlobalAnalytics());
+    }
+}

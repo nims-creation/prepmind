@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "ai_request_logs")
 public class AiRequestLog {
 
     @Id
@@ -36,4 +37,11 @@ public class AiRequestLog {
     private boolean success;
 
     private String errorMessage;
+
+    // REQUIRED FOR ANALYTICS
+
+    private Long promptTokens;
+    private Long completionTokens;
+    private Long totalTokens;
+    private Double estimatedCost;
 }
